@@ -42,16 +42,19 @@ var v1CidPrefix = cid.Prefix{
 	Version:  1,
 }
 
-func (n *ProtoNode) SetCidVersion(v CidVersion) {
-	switch v {
+func PrefixForCidVersion(version int) (cid.Prefix, error) {
+	switch version {
 	case 0:
-		n.Prefix = v0CidPrefix
+		return v0CidPrefix, nil
 	case 1:
-		n.Prefix = v1CidPrefix
+		return v1CidPrefix, nil
 	default:
-		// should not happen
-		panic("unhanded prefix version")
+		return cid.Prefix{}, fmt.Errorf("unknown CID version: %d", version)
 	}
+}
+
+func (n *ProtoNode) SetPrefix(prefix cid.Prefix) {
+	n.Prefix = prefix
 	n.encoded = nil
 	n.cached = nil
 }

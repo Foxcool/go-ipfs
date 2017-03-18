@@ -10,6 +10,7 @@ import (
 	pi "github.com/ipfs/go-ipfs/thirdparty/posinfo"
 	ft "github.com/ipfs/go-ipfs/unixfs"
 
+	cid "gx/ipfs/QmV5gPoRsjN1Gid3LMdNZTyfCtP2DsvqEbMAmz82RmmiGk/go-cid"
 	node "gx/ipfs/QmYDscK7dmdo2GZ9aumS8s5auUUAH5mR1jvj5pYhWusfK7/go-ipld-node"
 )
 
@@ -61,8 +62,8 @@ func NewUnixfsNodeFromDag(nd *dag.ProtoNode) (*UnixfsNode, error) {
 	}, nil
 }
 
-func (n *UnixfsNode) SetCidVersion(v dag.CidVersion) {
-	n.node.SetCidVersion(v)
+func (n *UnixfsNode) SetPrefix(prefix cid.Prefix) {
+	n.node.SetPrefix(prefix)
 }
 
 func (n *UnixfsNode) NumChildren() int {

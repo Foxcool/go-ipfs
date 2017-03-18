@@ -110,12 +110,12 @@ type Adder struct {
 	mr         *mfs.Root
 	unlocker   bs.Unlocker
 	tempRoot   *cid.Cid
-	cidVersion dag.CidVersion
+	prefix     cid.Prefix
 }
 
-func (adder *Adder) SetCidVersion(cidVer dag.CidVersion) {
-	adder.mr.SetCidVersion(cidVer)
-	adder.cidVersion = cidVer
+func (adder *Adder) SetPrefix(prefix cid.Prefix) {
+	adder.mr.SetPrefix(prefix)
+	adder.prefix = prefix
 }
 
 func (adder *Adder) SetMfsRoot(r *mfs.Root) {
@@ -130,11 +130,11 @@ func (adder Adder) add(reader io.Reader) (node.Node, error) {
 	}
 
 	params := ihelper.DagBuilderParams{
-		Dagserv:    adder.dagService,
-		RawLeaves:  adder.RawLeaves,
-		Maxlinks:   ihelper.DefaultLinksPerBlock,
-		NoCopy:     adder.NoCopy,
-		CidVersion: adder.cidVersion,
+		Dagserv:   adder.dagService,
+		RawLeaves: adder.RawLeaves,
+		Maxlinks:  ihelper.DefaultLinksPerBlock,
+		NoCopy:    adder.NoCopy,
+		Prefix:    adder.prefix,
 	}
 
 	if adder.Trickle {
@@ -402,7 +402,7 @@ func (adder *Adder) addFile(file files.File) error {
 		}
 
 		dagnode := dag.NodeWithData(sdata)
-		dagnode.SetCidVersion(adder.cidVersion)
+		dagnode.SetPrefix(adder.prefix)
 		_, err = adder.dagService.Add(dagnode)
 		if err != nil {
 			return err

@@ -61,8 +61,8 @@ type Root struct {
 
 	Type string
 
-	// CID version to use for any children created
-	CidVersion dag.CidVersion
+	// Prefix to use for any children created
+	Prefix cid.Prefix
 }
 
 type PubFunc func(context.Context, *cid.Cid) error
@@ -107,9 +107,9 @@ func NewRoot(parent context.Context, ds dag.DAGService, node *dag.ProtoNode, pf 
 // SetCidVersion sets the CidVersion of the root node, and any
 // children created.  To just set the CID version of future children,
 // set CidVersion directly
-func (kr *Root) SetCidVersion(cidVer dag.CidVersion) {
-	kr.node.SetCidVersion(cidVer)
-	kr.CidVersion = cidVer
+func (kr *Root) SetPrefix(prefix cid.Prefix) {
+	kr.node.SetPrefix(prefix)
+	kr.Prefix = prefix
 }
 
 func (kr *Root) GetValue() FSNode {

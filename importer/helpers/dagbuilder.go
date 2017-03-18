@@ -9,22 +9,23 @@ import (
 	dag "github.com/ipfs/go-ipfs/merkledag"
 	ft "github.com/ipfs/go-ipfs/unixfs"
 
+	cid "gx/ipfs/QmV5gPoRsjN1Gid3LMdNZTyfCtP2DsvqEbMAmz82RmmiGk/go-cid"
 	node "gx/ipfs/QmYDscK7dmdo2GZ9aumS8s5auUUAH5mR1jvj5pYhWusfK7/go-ipld-node"
 )
 
 // DagBuilderHelper wraps together a bunch of objects needed to
 // efficiently create unixfs dag trees
 type DagBuilderHelper struct {
-	dserv      dag.DAGService
-	spl        chunk.Splitter
-	recvdErr   error
-	rawLeaves  bool
-	nextData   []byte // the next item to return.
-	maxlinks   int
-	batch      *dag.Batch
-	fullPath   string
-	stat       os.FileInfo
-	cidVersion dag.CidVersion
+	dserv     dag.DAGService
+	spl       chunk.Splitter
+	recvdErr  error
+	rawLeaves bool
+	nextData  []byte // the next item to return.
+	maxlinks  int
+	batch     *dag.Batch
+	fullPath  string
+	stat      os.FileInfo
+	prefix    cid.Prefix
 }
 
 type DagBuilderParams struct {
@@ -35,8 +36,8 @@ type DagBuilderParams struct {
 	// instead of using the unixfs TRaw type
 	RawLeaves bool
 
-	// CID Version to use
-	CidVersion dag.CidVersion
+	// CID Prefix to use
+	Prefix cid.Prefix
 
 	// DAGService to write blocks to (required)
 	Dagserv dag.DAGService
@@ -50,12 +51,12 @@ type DagBuilderParams struct {
 // from chunks object
 func (dbp *DagBuilderParams) New(spl chunk.Splitter) *DagBuilderHelper {
 	db := &DagBuilderHelper{
-		dserv:      dbp.Dagserv,
-		spl:        spl,
-		rawLeaves:  dbp.RawLeaves,
-		cidVersion: dbp.CidVersion,
-		maxlinks:   dbp.Maxlinks,
-		batch:      dbp.Dagserv.Batch(),
+		dserv:     dbp.Dagserv,
+		spl:       spl,
+		rawLeaves: dbp.RawLeaves,
+		prefix:    dbp.Prefix,
+		maxlinks:  dbp.Maxlinks,
+		batch:     dbp.Dagserv.Batch(),
 	}
 	if fi, ok := spl.Reader().(files.FileInfo); dbp.NoCopy && ok {
 		db.fullPath = fi.AbsPath()
@@ -115,7 +116,7 @@ func (db *DagBuilderHelper) NewUnixfsNode() *UnixfsNode {
 		node: new(dag.ProtoNode),
 		ufmt: &ft.FSNode{Type: ft.TFile},
 	}
-	n.SetCidVersion(db.cidVersion)
+	n.SetPrefix(db.prefix)
 	return n
 }
 
@@ -125,7 +126,7 @@ func (db *DagBuilderHelper) NewUnixfsBlock() *UnixfsNode {
 		node: new(dag.ProtoNode),
 		ufmt: &ft.FSNode{Type: ft.TRaw},
 	}
-	n.SetCidVersion(db.cidVersion)
+	n.SetPrefix(db.prefix)
 	return n
 }
 

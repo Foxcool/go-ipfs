@@ -14,6 +14,7 @@ import (
 	ft "github.com/ipfs/go-ipfs/unixfs"
 	ufspb "github.com/ipfs/go-ipfs/unixfs/pb"
 
+	cid "gx/ipfs/QmV5gPoRsjN1Gid3LMdNZTyfCtP2DsvqEbMAmz82RmmiGk/go-cid"
 	node "gx/ipfs/QmYDscK7dmdo2GZ9aumS8s5auUUAH5mR1jvj5pYhWusfK7/go-ipld-node"
 )
 
@@ -50,8 +51,8 @@ func NewDirectory(ctx context.Context, name string, node *dag.ProtoNode, parent 
 	}
 }
 
-func (d *Directory) SetCidVersion(cidVer dag.CidVersion) {
-	d.node.SetCidVersion(cidVer)
+func (d *Directory) SetPrefix(prefix cid.Prefix) {
+	d.node.SetPrefix(prefix)
 }
 
 // closeChild updates the child by the given name to the dag node 'nd'
