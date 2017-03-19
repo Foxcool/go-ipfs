@@ -125,6 +125,7 @@ func NewMultiError(errs ...error) *MultiError {
 	return &MultiError{errs[:len(errs)-1], errs[len(errs)-1]}
 }
 
+// MultiError contains the results of multiple errors.
 type MultiError struct {
 	Errors  []error
 	Summary error
